@@ -1,8 +1,8 @@
 # Intro to Parallel Computing, Final Project
 # A.Y. 2023/2024
 # Authors: Alessandro Iepure, 228023
-#		   Lorenzo Fasol, <matricola>
-#		   Riccardo Minella, <matricola>
+#		   Lorenzo Fasol, 227561
+#          Riccardo Minella, 227326
 #
 # Makefile
 
@@ -12,12 +12,12 @@ MPICC = mpicc
 NVCC = nvcc
 
 # Compilers flags
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -std=c99
 NVCCFLAGS = -Wall,-Wextra
 MPICCFLAGS = -Wall -Wextra
 
 # Source files
-SEQ_SRCS = src/main.c
+SEQ_SRCS = src/sequential.c
 OMP_SRCS = src/main.c
 MPI_SRCS = src/main.c
 CUDA_SRCS = src/main.c
