@@ -13,6 +13,10 @@
 #include <stdint.h>
 #include <time.h>
 
+#ifdef _OPENMP
+    #include <omp.h>
+#endif
+
 #define _GNU_SOURCE
 #include <string.h>
 
@@ -102,6 +106,7 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
     memset(padded_input, 0, padded_width * padded_height * channels);
 
     // Copy the original image to the center of the padded image
+    #pragma omp parallel for collapse(3)
     for (int y = PADDING; y < height + PADDING; y++) {
         for (int x = PADDING; x < width + PADDING; x++) {
             for (int c = 0; c < channels; c++) {
@@ -112,8 +117,9 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
 
     // convolution(padded_input, padded_output, padded_width, padded_height, channels);
 
-    double start = clock();
+    double start_time = omp_get_wtime();
 
+    #pragma omp parallel for collapse(3) 
     for (int y = PADDING; y < padded_height - PADDING; y++) {
         for (int x = PADDING; x < padded_width - PADDING; x++) {
             for (int c = 0; c < channels; c++) {
@@ -121,6 +127,7 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
                     padded_output[((y * padded_width + x) * channels) + c] = padded_input[((y * padded_width + x) * channels) + c];
                 else {
                     float sum = 0.0;
+                    #pragma omp reduction(+:sum) simd
                     for (int ky = 0; ky < KERNEL_SIZE; ky++) {
                         for (int kx = 0; kx < KERNEL_SIZE; kx++) {
                             int pixel_x = x + kx - PADDING;
@@ -134,9 +141,11 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
         }
     }
 
-    double end = clock();
-    printf("Convolution time: %f\n", (end - start) / CLOCKS_PER_SEC);
+    double end_time = omp_get_wtime();
+    double elapsed_time = end_time - start_time;
+    printf("Elapsed time: %f\n", elapsed_time);
 
+    #pragma omp parallel for collapse(3)
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             for (int c = 0; c < channels; c++) {
