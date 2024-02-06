@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <time.h>
 #include <cuda_runtime.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -11,7 +10,6 @@
 #include "../lib/stb_image_write.h"
 
 #define KERNEL_SIZE 3
-// #define BLOCK_SIZE 3 * 10
 
 __constant__ float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
     {0, 1, 0},
@@ -57,7 +55,7 @@ int main(int argc, char **argv) {
     
     unsigned char *image = stbi_load(argv[1], &width, &height, &channels, 0);
     int block_size = channels * blocks_num;
-    
+
     printf("Image loaded: %dx%d, %d channels\n", width, height, channels);
 
     if (image == NULL) {
@@ -67,9 +65,6 @@ int main(int argc, char **argv) {
 
     // Allocate memory for the output image
     unsigned char *output = (unsigned char *)malloc(width * height * channels);
-
-    // Copy kernel to constant memory
-    //cudaMemcpyToSymbol(constant_kernel, kernel, KERNEL_SIZE * KERNEL_SIZE * sizeof(float));
 
     // Allocate device memory
     unsigned char *d_input, *d_output;
@@ -90,8 +85,8 @@ int main(int argc, char **argv) {
     cudaMemcpy(output, d_output, width * height * channels * sizeof(unsigned char), cudaMemcpyDeviceToHost);
 
     // Save output image
-    stbi_write_png("results/bliss_conv_cuda.png", width, height, channels, output, width * channels);
-    printf("Output image saved to results/bliss_conv_cuda.png\n");
+    stbi_write_png("results/cuda.png", width, height, channels, output, width * channels);
+    printf("Output image saved to results/cuda.png\n");
 
     // Free device memory
     cudaFree(d_input);
