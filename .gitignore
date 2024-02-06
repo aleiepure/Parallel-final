@@ -2,5 +2,7 @@ cmake-build-debug
 .idea
 .vscode
 
-out
-results
+.DS_Store
+
+out/
+results/

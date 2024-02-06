@@ -7,26 +7,30 @@
 # Makefile
 
 # Compilers
+ifeq ($(shell uname), Darwin)
 CC = gcc-13
 MPICC = mpicc
+else
+CC = gcc
+MPICC = mpicc
 NVCC = nvcc
+endif
 
 # Compilers flags
-CFLAGS = -Wall -Wextra -std=c99
-NVCCFLAGS = -Wall,-Wextra
-MPICCFLAGS = -Wall -Wextra
+CFLAGS = -Wall -std=c99
+NVCCFLAGS = -Wall -std=c99
 
 # Source files
 SEQ_SRCS = src/sequential.c
-OMP_SRCS = src/main.c
-MPI_SRCS = src/main.c
-CUDA_SRCS = src/main.c
+OMP_SRCS = src/omp.c
+MPI_SRCS = src/mpi.c
+CUDA_SRCS = src/cuda.cu
 
 # Output directory
 OUT_DIR = out
 
 # Default target
-all: seq omp mpi #cuda
+all: seq omp mpi cuda
 
 # Compile sequential version
 .phony: seq
@@ -41,12 +45,20 @@ omp:
 # Compile MPI version
 .phony: mpi
 mpi:
-	$(MPICC) $(MPICCFLAGS) $(MPI_SRCS) -o $(OUT_DIR)/$@
+ifdef MPICC
+	$(MPICC) $(CFLAGS) $(MPI_SRCS) -o $(OUT_DIR)/$@
+else
+	@echo "MPICC not found. Skipping MPI compilation."
+endif
 
 # Compile CUDA version
 .phony: cuda
 cuda:
+ifdef NVCC
 	$(NVCC) $(NVCCFLAGS) $(CUDA_SRCS) -o $(OUT_DIR)/$@
+else
+	@echo "NVCC not found. Skipping CUDA compilation."
+endif
 
 # Clean up object files and executable
 .phony: clean
