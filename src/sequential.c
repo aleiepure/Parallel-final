@@ -13,9 +13,6 @@
 #include <stdint.h>
 #include <time.h>
 
-#define _GNU_SOURCE
-#include <string.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
 
@@ -27,68 +24,17 @@
 const int PADDING = KERNEL_SIZE / 2;
 
 // Convolution kernel
-const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-    {0, 0, 0},
-    {-1, 1, 0},
-    {0, 0, 0}
-};
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 1, 0},
-//     {1, -4, 1},
-//     {0, 1, 0}
-// };
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 1.0 / 4, 0},
-//     {1.0 / 4, 0, 1.0 / 4},
-//     {0, 1.0 / 4, 0}
-// };
-
 // const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
 //     {0, 0, 0},
-//     {0, 1, 0},
+//     {1, -1, 0},
 //     {0, 0, 0}
 // };
 
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {2, 1, 0},
-//     {1, 1, -1},
-//     {0, -1, -2}
-// };
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 0, 0, 0, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 0, 0, 0, 0}
-// };
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {1, 1, 1},
-//     {1, 1, 1},
-//     {1, 1, 1},
-// };
-
-// Convolution without zero padding
-// void convolution(unsigned char *input, unsigned char *output, int width, int height, int channels) {
-//     for (int y = PADDING; y < height - PADDING; y++) {
-//         for (int x = PADDING; x < width - PADDING; x++) {
-//             for (int c = 0; c < channels; c++) {
-//                 float sum = 0.0;
-//                 for (int ky = 0; ky < KERNEL_SIZE; ky++) {
-//                     for (int kx = 0; kx < KERNEL_SIZE; kx++) {
-//                         int pixel_x = x + kx - PADDING;
-//                         int pixel_y = y + ky - PADDING;
-//                         sum += input[((pixel_y * width + pixel_x) * channels) + c] * kernel[ky][kx];
-//                     }
-//                 }
-//                 output[((y * width + x) * channels) + c] = (unsigned char)sum;
-//             }
-//         }
-//     }
-// }
+const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
+    {0, 1, 0},
+    {1, -4, 1},
+    {0, 1, 0}
+};
 
 // Convolution with zero padding
 void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int height, int channels) {
@@ -127,8 +73,13 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
                             int pixel_y = y + ky - PADDING;
                             sum += padded_input[((pixel_y * padded_width + pixel_x) * channels) + c] * kernel[ky][kx];
                         }
-                    }
-                    padded_output[((y * padded_width + x) * channels) + c] = (unsigned char)sum;   
+                    } 
+                    if (sum < 0)
+                        padded_output[((y * padded_width + x) * channels) + c] = 0;
+                    else if (sum > 255)
+                        padded_output[((y * padded_width + x) * channels) + c] = 255;
+                    else
+                    padded_output[((y * padded_width + x) * channels) + c] = (unsigned char)sum;
                 }
             }
         }
@@ -147,8 +98,8 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
 
     // Free memory
     free(padded_input);
+    free(padded_output);
 }
-
 
 int main(int argc, char **argv) {
 
@@ -175,8 +126,8 @@ int main(int argc, char **argv) {
 
     convolutionZP(image, output, width, height, channels);
 
-    stbi_write_png("results/bliss_conv_zp.png", width, height, channels, output, width * channels);
-    printf("Output image saved to results/bliss_conv_zp.png\n");
+    stbi_write_png("results/seq.png", width, height, channels, output, width * channels);
+    printf("Output image saved to results/seq.png\n");
 
     // Free memory
     stbi_image_free(image);
