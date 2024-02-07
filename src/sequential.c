@@ -38,6 +38,8 @@ const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
 
 // Convolution with zero padding
 void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int height, int channels) {
+    double start = clock();
+
     // Create a padded version of the input image
     int padded_width = width + 2 * PADDING;
     int padded_height = height + 2 * PADDING;
@@ -55,10 +57,6 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
             }
         }
     }
-
-    // convolution(padded_input, padded_output, padded_width, padded_height, channels);
-
-    double start = clock();
 
     for (int y = PADDING; y < padded_height - PADDING; y++) {
         for (int x = PADDING; x < padded_width - PADDING; x++) {
@@ -85,9 +83,6 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
         }
     }
 
-    double end = clock();
-    printf("Convolution time: %f\n", (end - start) / CLOCKS_PER_SEC);
-
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             for (int c = 0; c < channels; c++) {
@@ -95,6 +90,9 @@ void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int
             }
         }
     }
+
+    double end = clock();
+    printf("Convolution time: %f\n", (end - start) / CLOCKS_PER_SEC);
 
     // Free memory
     free(padded_input);
