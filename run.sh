@@ -41,20 +41,4 @@ qsub jobs/mpi/mpi_np64.pbs
 
 qsub jobs/cuda.pbs
 
-# Check if qstat output contains any running operations
-check_running_operations() {
-    if qstat -u "$USER" | grep -q " R "; then
-        return 0  # Running
-    else
-        return 1  # Done running
-    fi
-}
-
-watch '
-if check_running_operations; then
-    qstat -u "$USER"
-else
-    echo "No running operations. Exiting..."
-    exit
-fi
-'
+watch qstat -u "$USER"

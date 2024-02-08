@@ -108,7 +108,7 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
   }
 
   double end = clock();
-  printf("Elapsed time: %f ms\n", (end - start) / CLOCKS_PER_SEC * 1000.0);
+  printf("Elapsed time: %f ms (cores: %d)\n", (end - start) / CLOCKS_PER_SEC * 1000.0, omp_get_max_threads());
 
   // Clean up
   free(padded_input);

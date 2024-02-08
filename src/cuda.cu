@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
 
-    printf("Convolution time: %f ms\n", milliseconds);
+    printf("Elapsed time: %f ms\n", milliseconds);
 
     // Destroy the events
     cudaEventDestroy(start);
