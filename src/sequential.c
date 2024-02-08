@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
@@ -36,7 +37,9 @@ const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
  */
 void convolution(const unsigned char *input, unsigned char *outputZP,
                  const int width, const int height, const int channels) {
-  double start = clock();
+  
+  struct timeval start, end; 
+  gettimeofday(&start, NULL);
 
   // Create a padded version of the input image
   int padded_width = width + 2 * PADDING;
@@ -103,8 +106,8 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
     }
   }
 
-  double end = clock();
-  printf("Elapsed time: %f ms\n", (end - start) / CLOCKS_PER_SEC * 1000.0);
+  gettimeofday(&end, NULL);
+  printf("Elapsed time: %lu ms\n", ((end.tv_sec - start.tv_sec) * 1000) + ((end.tv_usec - start.tv_usec) / 1000));
 
   // Free memory
   free(padded_input);

@@ -37,7 +37,8 @@ const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
  */
 void convolution(const unsigned char *input, unsigned char *outputZP,
                  const int width, const int height, const int channels) {
-  double start = clock();
+  double start, end;
+  start = omp_get_wtime();
 
   // Create a padded version of the input image
   int padded_width = width + 2 * PADDING;
@@ -51,7 +52,7 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
   memset(padded_input, 0, padded_width * padded_height * channels);
 
 // Copy the original image to the center of the padded image
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for
   for (int y = PADDING; y < height + PADDING; y++) {
     for (int x = PADDING; x < width + PADDING; x++) {
       for (int c = 0; c < channels; c++) {
@@ -62,7 +63,7 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
   }
 
   // Applies convolution
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for
   for (int y = PADDING; y < padded_height - PADDING; y++) {
     for (int x = PADDING; x < padded_width - PADDING; x++) {
       for (int c = 0; c < channels; c++) {
@@ -95,7 +96,7 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
   }
 
   // Remove padding from result
-#pragma omp parallel for collapse(2)  
+#pragma omp parallel for
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       for (int c = 0; c < channels; c++) {
@@ -107,8 +108,8 @@ void convolution(const unsigned char *input, unsigned char *outputZP,
     }
   }
 
-  double end = clock();
-  printf("Elapsed time: %f ms (cores: %d)\n", (end - start) / CLOCKS_PER_SEC * 1000.0, omp_get_max_threads());
+  end = omp_get_wtime();
+  printf("Elapsed time: %f ms (cores: %d)\n", (end - start)*1000, omp_get_max_threads());
 
   // Clean up
   free(padded_input);
