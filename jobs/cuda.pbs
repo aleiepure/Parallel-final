@@ -1,11 +1,13 @@
 #! /bin/bash
 
-#PBS -N seq
+#PBS -N cuda
 #PBS -q short_gpuQ
-#PBS -o results/seq.o
-#PBS -e results/seq.e
+#PBS -o results/cuda.o
+#PBS -e results/cuda.e
 
 set -e  # exit on any error
+
+module load cuda-11.3
 
 # Get the list of UNIQUE nodes assigned to the job
 NODES=$(sort -u $PBS_NODEFILE)

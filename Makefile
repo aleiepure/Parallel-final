@@ -18,7 +18,7 @@ endif
 
 # Compilers flags
 CFLAGS = -Wall -std=c99
-NVCCFLAGS = -Wall -std=c99
+NVCCFLAGS = -w
 
 # Source files
 SEQ_SRCS = src/sequential.c

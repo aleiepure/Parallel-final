@@ -8,6 +8,9 @@
 
 set -e
 
+module load gcc91
+module load mpich-3.2.1--gcc-9.1.0
+
 # Get the list of UNIQUE nodes assigned to the job
 NODES=$(sort -u $PBS_NODEFILE)
 

@@ -15,6 +15,7 @@ gcc() {
 gcc --version
 mpicc --version
 nvcc --version
+printf \n
 
 # Change to the working directory
 cd /home/$USER/Parallel-final
@@ -40,4 +41,20 @@ qsub jobs/mpi/mpi_np64.pbs
 
 qsub jobs/cuda.pbs
 
-watch qstat -u $USER
+# Check if qstat output contains any running operations
+check_running_operations() {
+    if qstat -u "$USER" | grep -q " R "; then
+        return 0  # Running
+    else
+        return 1  # Done running
+    fi
+}
+
+watch '
+if check_running_operations; then
+    qstat -u "$USER"
+else
+    echo "No running operations. Exiting..."
+    exit
+fi
+'
