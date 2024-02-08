@@ -1,0 +1,28 @@
+#! /bin/bash
+
+#PBS -N omp
+#PBS -q short_cpuQ
+#PBS -o results/omp.o
+#PBS -e results/omp.e
+#PBS -l select=1:ncpus=64:ompthreads=64
+
+set -e  # exit on any error
+
+# Get the list of UNIQUE nodes assigned to the job
+NODES=$(sort -u $PBS_NODEFILE)
+
+# Loop through each node and get architecture information
+for NODE in $NODES; do
+    echo "Node: $NODE"
+    ssh $NODE "lscpu"
+done
+
+# Select the working directory
+cd /home/$USER/Parallel-final
+
+OMP_NUM_THREADS=2 ./out/omp tvTest.png
+OMP_NUM_THREADS=4 ./out/omp tvTest.png
+OMP_NUM_THREADS=8 ./out/omp tvTest.png
+OMP_NUM_THREADS=16 ./out/omp tvTest.png
+OMP_NUM_THREADS=32 ./out/omp tvTest.png
+OMP_NUM_THREADS=64 ./out/omp tvTest.png

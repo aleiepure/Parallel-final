@@ -1,0 +1,22 @@
+#! /bin/bash
+
+#PBS -N seq
+#PBS -q short_gpuQ
+#PBS -o results/seq.o
+#PBS -e results/seq.e
+
+set -e  # exit on any error
+
+# Get the list of UNIQUE nodes assigned to the job
+NODES=$(sort -u $PBS_NODEFILE)
+
+# Loop through each node and get architecture information
+for NODE in $NODES; do
+    echo "Node: $NODE"
+    ssh $NODE "lscpu"
+done
+
+# Select the working directory
+cd /home/$USER/Parallel-final
+
+./out/cuda tvTest.png

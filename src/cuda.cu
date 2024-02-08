@@ -10,7 +10,7 @@
 #include "../lib/stb_image_write.h"
 
 #define KERNEL_SIZE 3
-#define PADDING (KERNEL_SIZE / 2)
+const int PADDING = KERNEL_SIZE / 2;
 
 __constant__ float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
     {0, 1, 0},

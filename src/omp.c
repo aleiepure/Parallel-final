@@ -5,20 +5,14 @@
  *          Lorenzo Fasol, 227561
  *          Riccardo Minella, 227326
  *
- * Sequential implementation of the image processing algorithm.
+ * OpenMP implementation of the image processing algorithm.
  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <time.h>
-
-#ifdef _OPENMP
-    #include <omp.h>
-#endif
-
-#define _GNU_SOURCE
-#include <string.h>
+#include <omp.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
@@ -26,170 +20,135 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../lib/stb_image_write.h"
 
+// Constants
 #define KERNEL_SIZE 3
-
 const int PADDING = KERNEL_SIZE / 2;
-
-// Convolution kernel
 const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-    {0, 0, 0},
-    {-1, 1, 0},
-    {0, 0, 0}
-};
+    {0, 1, 0}, {1, -4, 1}, {0, 1, 0}};
 
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 1, 0},
-//     {1, -4, 1},
-//     {0, 1, 0}
-// };
+/*
+ * Convolution
+ *
+ * @param input The input image
+ * @param outputZP The output image with zero padding
+ * @param width The width of the image
+ * @param height The height of the image
+ * @param channels The number of channels
+ */
+void convolution(const unsigned char *input, unsigned char *outputZP,
+                 const int width, const int height, const int channels) {
+  double start = clock();
 
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 1.0 / 4, 0},
-//     {1.0 / 4, 0, 1.0 / 4},
-//     {0, 1.0 / 4, 0}
-// };
+  // Create a padded version of the input image
+  int padded_width = width + 2 * PADDING;
+  int padded_height = height + 2 * PADDING;
+  unsigned char *padded_input =
+      (unsigned char *)malloc(padded_width * padded_height * channels);
+  unsigned char *padded_output =
+      (unsigned char *)malloc(padded_width * padded_height * channels);
 
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 0, 0},
-//     {0, 1, 0},
-//     {0, 0, 0}
-// };
+  // Initialize padded_input with zeros
+  memset(padded_input, 0, padded_width * padded_height * channels);
 
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {2, 1, 0},
-//     {1, 1, -1},
-//     {0, -1, -2}
-// };
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {0, 0, 0, 0, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 1, 1, 1, 0},
-//     {0, 0, 0, 0, 0}
-// };
-
-// const float kernel[KERNEL_SIZE][KERNEL_SIZE] = {
-//     {1, 1, 1},
-//     {1, 1, 1},
-//     {1, 1, 1},
-// };
-
-// Convolution without zero padding
-// void convolution(unsigned char *input, unsigned char *output, int width, int height, int channels) {
-//     for (int y = PADDING; y < height - PADDING; y++) {
-//         for (int x = PADDING; x < width - PADDING; x++) {
-//             for (int c = 0; c < channels; c++) {
-//                 float sum = 0.0;
-//                 for (int ky = 0; ky < KERNEL_SIZE; ky++) {
-//                     for (int kx = 0; kx < KERNEL_SIZE; kx++) {
-//                         int pixel_x = x + kx - PADDING;
-//                         int pixel_y = y + ky - PADDING;
-//                         sum += input[((pixel_y * width + pixel_x) * channels) + c] * kernel[ky][kx];
-//                     }
-//                 }
-//                 output[((y * width + x) * channels) + c] = (unsigned char)sum;
-//             }
-//         }
-//     }
-// }
-
-// Convolution with zero padding
-void convolutionZP(unsigned char *input, unsigned char *outputZP, int width, int height, int channels) {
-    // Create a padded version of the input image
-    int padded_width = width + 2 * PADDING;
-    int padded_height = height + 2 * PADDING;
-    unsigned char *padded_input = (unsigned char *)malloc(padded_width * padded_height * channels);
-    unsigned char *padded_output = (unsigned char *)malloc(padded_width * padded_height * channels);
-
-    // Initialize padded_input with zeros
-    memset(padded_input, 0, padded_width * padded_height * channels);
-
-    // Copy the original image to the center of the padded image
-    #pragma omp parallel for collapse(3)
-    for (int y = PADDING; y < height + PADDING; y++) {
-        for (int x = PADDING; x < width + PADDING; x++) {
-            for (int c = 0; c < channels; c++) {
-                padded_input[(y * padded_width + x) * channels + c] = input[((y - PADDING) * width + (x - PADDING)) * channels + c];
-            }
-        }
+// Copy the original image to the center of the padded image
+#pragma omp parallel for collapse(2)
+  for (int y = PADDING; y < height + PADDING; y++) {
+    for (int x = PADDING; x < width + PADDING; x++) {
+      for (int c = 0; c < channels; c++) {
+        padded_input[(y * padded_width + x) * channels + c] =
+            input[((y - PADDING) * width + (x - PADDING)) * channels + c];
+      }
     }
+  }
 
-    // convolution(padded_input, padded_output, padded_width, padded_height, channels);
+  // Applies convolution
+#pragma omp parallel for collapse(2)
+  for (int y = PADDING; y < padded_height - PADDING; y++) {
+    for (int x = PADDING; x < padded_width - PADDING; x++) {
+      for (int c = 0; c < channels; c++) {
 
-    double start_time = omp_get_wtime();
-
-    #pragma omp parallel for collapse(3) 
-    for (int y = PADDING; y < padded_height - PADDING; y++) {
-        for (int x = PADDING; x < padded_width - PADDING; x++) {
-            for (int c = 0; c < channels; c++) {
-                if (channels == 4 && c == 3)
-                    padded_output[((y * padded_width + x) * channels) + c] = padded_input[((y * padded_width + x) * channels) + c];
-                else {
-                    float sum = 0.0;
-                    #pragma omp reduction(+:sum) simd
-                    for (int ky = 0; ky < KERNEL_SIZE; ky++) {
-                        for (int kx = 0; kx < KERNEL_SIZE; kx++) {
-                            int pixel_x = x + kx - PADDING;
-                            int pixel_y = y + ky - PADDING;
-                            sum += padded_input[((pixel_y * padded_width + pixel_x) * channels) + c] * kernel[ky][kx];
-                        }
-                    }
-                    padded_output[((y * padded_width + x) * channels) + c] = (unsigned char)sum;   
-                }
+        // Ignore alpha channel if present
+        if (channels == 4 && c == 3)
+          padded_output[((y * padded_width + x) * channels) + c] =
+              padded_input[((y * padded_width + x) * channels) + c];
+        else {
+          float sum = 0.0;
+          for (int ky = 0; ky < KERNEL_SIZE; ky++) {
+            for (int kx = 0; kx < KERNEL_SIZE; kx++) {
+              int pixel_x = x + kx - PADDING;
+              int pixel_y = y + ky - PADDING;
+              sum +=
+                  padded_input[((pixel_y * padded_width + pixel_x) * channels) +
+                               c] *
+                  kernel[ky][kx];
             }
+          }
+
+          // Clamp the result to [0, 255]
+          sum = sum < 0 ? 0 : sum;
+          sum = sum > 255 ? 255 : sum;
+          padded_output[((y * padded_width + x) * channels) + c] =
+              (unsigned char)sum;
         }
+      }
     }
+  }
 
-    double end_time = omp_get_wtime();
-    double elapsed_time = end_time - start_time;
-    printf("Elapsed time: %f\n", elapsed_time);
-
-    #pragma omp parallel for collapse(3)
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            for (int c = 0; c < channels; c++) {
-                outputZP[(y * width + x) * channels + c] = padded_output[((y + PADDING) * padded_width + (x + PADDING)) * channels + c];
-            }
-        }
+  // Remove padding from result
+#pragma omp parallel for collapse(2)  
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      for (int c = 0; c < channels; c++) {
+        outputZP[(y * width + x) * channels + c] =
+            padded_output[((y + PADDING) * padded_width + (x + PADDING)) *
+                              channels +
+                          c];
+      }
     }
+  }
 
-    // Free memory
-    free(padded_input);
+  double end = clock();
+  printf("Elapsed time: %f ms\n", (end - start) / CLOCKS_PER_SEC * 1000.0);
+
+  // Clean up
+  free(padded_input);
+  free(padded_output);
 }
-
 
 int main(int argc, char **argv) {
 
-    // Check command-line arguments
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <path to image>\n", argv[0]);
-        return -1;
-    }
+  // Check command-line arguments
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <path to image>\n", argv[0]);
+    return -1;
+  }
 
-    // Load image
-    int width, height, channels;
-    unsigned char *image = stbi_load(argv[1], &width, &height, &channels, 0);
-    printf("Image loaded: %dx%d, %d channels\n", width, height, channels);
+  // Load image
+  int width, height, channels;
+  unsigned char *image = stbi_load(argv[1], &width, &height, &channels, 0);
+  printf("Image loaded: %dx%d, %d channels\n", width, height, channels);
 
-    if (image == NULL) {
-        fprintf(stderr, "Error loading image %s\n", argv[1]);
-        
-        free(image);
-        return -1;
-    }
+  if (image == NULL) {
+    fprintf(stderr, "Error loading image %s\n", argv[1]);
 
-    // Allocate memory for the output image
-    unsigned char *output = (unsigned char *)malloc(width * height * channels);
+    free(image);
+    return -1;
+  }
 
-    convolutionZP(image, output, width, height, channels);
+  // Allocate memory for the output image
+  unsigned char *output = (unsigned char *)malloc(width * height * channels);
 
-    stbi_write_png("results/bliss_conv_zp.png", width, height, channels, output, width * channels);
-    printf("Output image saved to results/bliss_conv_zp.png\n");
+  convolution(image, output, width, height, channels);
 
-    // Free memory
-    stbi_image_free(image);
-    free(output);
+  char filename[100];
+  sprintf(filename, "results/omp_%d.png", omp_get_max_threads());
+  stbi_write_png(filename, width, height, channels, output,
+                 width * channels);
+  printf("Output image saved to %s\n", filename);
 
-    return 0;
+  // Clean up
+  stbi_image_free(image);
+  free(output);
+
+  return 0;
 }

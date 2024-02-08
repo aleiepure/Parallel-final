@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#PBS -N mpi_np4
+#PBS -o results/mpi_np4.o
+#PBS -e results/mpi_np4.e
+#PBS -q short_cpuQ
+#PBS -l select=1:ncpus=4:mpiprocs=4
+
+set -e
+
+# Get the list of UNIQUE nodes assigned to the job
+NODES=$(sort -u $PBS_NODEFILE)
+
+# Loop through each node and get architecture information
+for NODE in $NODES; do
+    echo "Node: $NODE"
+    ssh $NODE "lscpu"
+done
+
+# Select the working directory
+cd /home/$USER/Parallel-final
+
+mpiexec out/mpi tvTest.png

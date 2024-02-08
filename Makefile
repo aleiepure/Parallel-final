@@ -35,18 +35,18 @@ all: seq omp mpi cuda
 # Compile sequential version
 .phony: seq
 seq:
-	$(CC) $(CFLAGS) $(SEQ_SRCS) -o $(OUT_DIR)/$@
+	$(CC) $(CFLAGS) $(SEQ_SRCS) -o $(OUT_DIR)/$@ -lm
 
 # Compile OpenMP version
 .phony: omp
 omp:
-	$(CC) $(CFLAGS) -fopenmp $(OMP_SRCS) -o $(OUT_DIR)/$@
+	$(CC) $(CFLAGS) -fopenmp $(OMP_SRCS) -o $(OUT_DIR)/$@ -lm
 
 # Compile MPI version
 .phony: mpi
 mpi:
 ifdef MPICC
-	$(MPICC) $(CFLAGS) $(MPI_SRCS) -o $(OUT_DIR)/$@
+	$(MPICC) $(CFLAGS) $(MPI_SRCS) -o $(OUT_DIR)/$@ -lm
 else
 	@echo "MPICC not found. Skipping MPI compilation."
 endif
