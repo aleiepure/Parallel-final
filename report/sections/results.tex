@@ -45,7 +45,18 @@ The experimental results demonstrate the performance characteristics of differen
 parallelization techniques for the image processing algorithm. The sequential %
 implementation serves as the baseline. Assuming ideal conditions, parallel execution %
 times should decrease linearly as the number of cores increase. However, our experiment %
-demonstrates that this is not always the case. Analyzing the results on OpenMP, from 32 to 64 %
+demonstrates that this is not always the case. 
+
+Comparing the execution times, we can see that both OpenMP %
+and MPI decrease as the number of cores increases, as shown in Fig. \ref{fig:plotTime}. %
+Around 16 cores, the execution times tend to stabile due to Amdahl's Law. Increasing %
+the number of cores can reduce the execution time only as long as the %
+sequential fraction remains a significant portion of the total time. %
+Once it becomes negligible compared to the optimized %
+parallel time, further increases in cores will not lead to significant %
+additional improvements in the overall time.
+
+Analyzing the results on OpenMP, from 32 to 64 %
 cores, the efficiency drops significantly as is observable in Fig. \ref{fig:plotEfficiency}. %
 Similarly, the MPI implementation shows a more pronounced drop between 8 and 64 %
 processes. This is likely due to increased overhead and resource contention, which %

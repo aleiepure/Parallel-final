@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.19)  9 FEB 2024 15:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.19)  9 FEB 2024 15:57
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1065,7 +1065,7 @@ de=log unsupported (yet).
 ) (./assets/efficiency.tex
 Package pgfplots info on input line 18: Using 'lua backend=false' for axis: xmo
 de=log unsupported (yet).
-) [2 <./sections/../../tvTest.png>]) (./sections/project.tex) (./report.bbl [3]
+) [2 <./sections/../../tvTest.png>]) (./sections/project.tex) [3] (./report.bbl
 
 Underfull \hbox (badness 10000) in paragraph at lines 65--69
 []$\OT1/ptm/m/n/8 https : / / developer . download . nvidia . com / compute / c
@@ -1116,10 +1116,10 @@ e/2023/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2023/tex
 mf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2023/texmf-dist/f
 onts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1
 /urw/times/utmri8a.pfb>
-Output written on report.pdf (4 pages, 229734 bytes).
+Output written on report.pdf (4 pages, 230126 bytes).
 PDF statistics:
- 152 PDF objects out of 1000 (max. 8388607)
- 121 compressed objects within 2 object streams
+ 153 PDF objects out of 1000 (max. 8388607)
+ 122 compressed objects within 2 object streams
  26 named destinations out of 1000 (max. 500000)
  66 words of extra memory for PDF output out of 10000 (max. 10000000)
 
