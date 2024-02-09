@@ -1,0 +1,74 @@
+% arara: pdflatex: { shell: yes }
+% arara: bibtex
+% arara: pdflatex: { shell: yes }
+% arara: pdflatex: { shell: yes }
+
+\documentclass[conference, 10pt, final, a4paper, oneside, twocolumn]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{pgfplots, pgfplotstable, tikzscale, standalone}
+\usepackage{siunitx}
+\usepackage[hidelinks]{hyperref}
+\pgfplotsset{width=10cm,compat=1.15}
+
+\pgfplotsset{
+    cycle list/.define={marks}{
+        every mark/.append style={solid,fill=\pgfkeysvalueof{/pgfplots/mark list fill}},mark=*\\
+        every mark/.append style={solid,fill=\pgfkeysvalueof{/pgfplots/mark list fill}},mark=square*\\
+        every mark/.append style={solid,fill=\pgfkeysvalueof{/pgfplots/mark list fill}},mark=triangle*\\
+        every mark/.append style={solid,fill=\pgfkeysvalueof{/pgfplots/mark list fill}},mark=diamond*\\
+        every mark/.append style={solid,fill=\pgfkeysvalueof{/pgfplots/mark list fill}},mark=x\\
+    },
+}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Parallel Image Processing}
+\author{
+    \IEEEauthorblockN{Lorenzo Fasol}
+    \IEEEauthorblockA{\textit{University of Trento}\\
+    Trento, Italy \\
+    lorenzo.fasol@studenti.unitn.it}
+    \and
+    \IEEEauthorblockN{Alessandro Iepure}
+    \IEEEauthorblockA{\textit{University of Trento}\\
+    Trento, Italy \\
+    alessandro.iepure@studenti.unitn.it}
+    \and
+    \IEEEauthorblockN{Riccardo Minella}
+    \IEEEauthorblockA{\textit{University of Trento}\\
+    Trento, Italy \\
+    riccardo.minella@studenti.unitn.it}
+}
+\maketitle
+
+\begin{abstract}
+    This report explores parallel image processing algorithms using shared and %
+    distributed memory paradigms, along with GPU acceleration. After developing %
+    a baseline serial implementation, the algorithm is parallelized using OpenMP, %
+    MPI, and CUDA, focusing on convolution-based image filtering for edge detection. %
+    Experiments are conducted on a heterogeneous HPC cluster, analyzing performance %
+    and scalability. Through theoretical analysis and practical experimentation, %
+    this report provides insights into the performance characteristics of parallel %
+    image processing algorithms and their scalability across different architectures.
+\end{abstract}
+
+\input{sections/introduction}
+\input{sections/implementation}
+\input{sections/experiment_system_description}
+\input{sections/results}
+\input{sections/project}
+
+\nocite{*}
+\IEEEtriggeratref{7}
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,assets/bibliography.bib}
+
+\end{document}

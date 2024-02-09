@@ -1,0 +1,36 @@
+\section{Experiments and System Description}
+
+For our experiments, we conducted performance evaluations on the University's HPC %
+cluster. Depending on the version of the algorithm executed and the resources required, %
+the computing node(s) used changed. The cluster is composed of an heterogeneous set of nodes, %
+each with different hardware. Multiple runs were performed for each version of the algorithm, %
+and the results were averaged to obtain a more reliable estimate of the performance.
+
+Software wise, all nodes in the cluster run CentOS Linux 7 and the code was compiled %
+using the GNU Compiler Collection 9.1.2 (GCC) for the sequential and OpenMP %
+implementations, MPICH 3.2 (MPICC) for MPI and the NVIDIA CUDA Compiler 11.3 (NVCC). %
+
+All tests were performed on the same input image, Fig. \ref{fig:inputImage}, with a resolution of %
+2560x1920 and 3 color channels per pixel. We chose this image because it is a standard %
+test card used in television broadcasting and it contains a variety of patterns and %
+colors that are useful for testing edge detection algorithms. The image was also chosen %
+because it is relatively large, which allows us to better analyze the performance of our %
+parallel algorithms. Image operations are performed %
+with the STB Image library, which is a simple library to load and save images %
+from files. The library is written in C and is able to load and save images in a %
+variety of formats, including JPEG, PNG, BMP, and TGA. Our code works with any %
+image as long as it is in one of the supported formats and - for the parallel versions only - %
+the height of the image is a multiple of the number of processes or threads.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{../../tvTest.png}
+    \caption{\label{fig:inputImage}Philips PM5544 Test card, the input image for the experiments.}
+\end{figure}
+
+After experimenting with different block sizes in the CUDA version, we found that %
+increasing the block size did not result in any significant performance improvement. %
+This is likely because the input image is relatively small, and the overhead of %
+launching a large number of threads outweighs any potential benefits. As a result, %
+we decided to stick with a block size of 32 which is CUDA's maximum value in our %
+setup.

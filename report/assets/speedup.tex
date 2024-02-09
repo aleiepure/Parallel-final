@@ -1,0 +1,55 @@
+\begin{figure}
+    \centering
+    \begin{tikzpicture}%
+        \begin{axis}[
+                width={0.8\linewidth},
+                xlabel={Threads},
+                ylabel={Speedup [$\times$]},
+                xtick=data, % Use data points as x-axis ticks
+                xticklabels={2, 4, 8, 16, 32, 64}, % Set the x-axis tick labels
+                yticklabels={-10, 0, 10, 20, 30, 40, 50, 60}, % Set the x-axis tick labels
+                cycle multiindex* list={
+                    color list
+                        \nextlist
+                    marks
+                        \nextlist
+                },
+                xmode=log, % Set x-axis mode to normal
+                legend pos=north west, % Place the legend on the top right
+            ]
+        
+            \addplot
+                coordinates {
+                    (2, 1.91)
+                    (4, 3.79)
+                    (8, 7.27)
+                    (16, 13.62)
+                    (32, 22.74)
+                    (64, 24.72)
+                };
+    
+            \addplot
+                coordinates {
+                    (2, 1.83)
+                    (4, 2.95)
+                    (8, 5.02)
+                    (16, 6.52)
+                    (32, 7.58)
+                    (64, 8.27)
+                };
+
+            \addplot[dashed, mark=*, mark options={solid}] % BEGIN: Add dashed style to the ideal plot
+            coordinates {
+                (2, 2)
+                (4, 4)
+                (8, 8)
+                (16, 16)
+                (32, 32)
+                (64, 64)
+            }; % END: Add dashed style to the ideal plot
+                
+            \legend{OpenMP, MPI, Ideal Trend}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{\label{fig:plotSpeedup}Speedup graph by number of cores}
+\end{figure}

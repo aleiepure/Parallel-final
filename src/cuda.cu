@@ -81,10 +81,9 @@ int main(int argc, char **argv) {
 
     // Load image
     int width, height, channels;
-    int blocks_num = 10;
     
     unsigned char *image = stbi_load(argv[1], &width, &height, &channels, 0);
-    int block_size = channels * blocks_num;
+    int block_size = 32;
 
     printf("Image loaded: %dx%d, %d channels\n", width, height, channels);
 

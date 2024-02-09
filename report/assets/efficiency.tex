@@ -1,0 +1,54 @@
+\begin{figure}
+    \centering
+    \begin{tikzpicture}%
+        \begin{axis}[
+                width={0.8\linewidth},
+                xlabel={Threads},
+                ylabel={Efficiency [\%]},
+                xtick=data,
+                xticklabels={2, 4, 8, 16, 32, 64},
+                cycle multiindex* list={
+                    color list
+                        \nextlist
+                    marks
+                        \nextlist
+                },
+                xmode=log,
+                legend pos=south west,
+            ]
+        
+            \addplot
+                coordinates {
+                    (2, 95.55)
+                    (4, 94.75)
+                    (8, 90.81)
+                    (16, 85.10)
+                    (32, 71.06)
+                    (64, 38.62)
+                };
+    
+            \addplot
+                coordinates {
+                    (2, 91.33)
+                    (4, 73.64)
+                    (8, 62.75)
+                    (16, 40.72)
+                    (32, 23.69)
+                    (64, 12.92)
+                };
+
+            \addplot[dashed, mark=*, mark options={solid}]
+                coordinates {
+                    (2, 100)
+                    (4, 100)
+                    (8, 100)
+                    (16, 100)
+                    (32, 100)
+                    (64, 100)
+                };
+                
+            \legend{OpenMP, MPI, Ideal Trend}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{\label{fig:plotEfficiency}Efficiency graph by number of cores}
+\end{figure}

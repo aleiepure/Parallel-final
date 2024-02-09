@@ -15,7 +15,6 @@ gcc() {
 gcc --version
 mpicc --version
 nvcc --version
-printf \n
 
 # Change to the working directory
 cd /home/$USER/Parallel-final

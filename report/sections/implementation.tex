@@ -1,0 +1,45 @@
+\section{Implementation}
+
+The baseline algorithm implemented starts by reading an input image from disk. The %
+image is then processed by applying padding around the perimeter. This is done to %
+ensure that the output image has the same dimensions as the input image after the %
+convolution is computed. In our implementation, we have chosen to use zero-padding %
+as the boundary-handling strategy. This decision was made based on several factors, %
+including simplicity and computational efficiency. While other techniques such as %
+mirror padding or wrapping around the image could also be considered, we opted %
+for zero-padding due to its minimal impact on performance and its ability to %
+preserve the overall structure of the image. By focusing on a single boundary-handling %
+strategy, we can more effectively analyze and compare the performance and output %
+quality of our parallel image filtering algorithms.
+After the convolution is computed, the output image is saved to disk and the elapsed %
+time is printed. The latter considers only the convolution operation %
+and not the time spent in I/O operations. This is also the performance metric %
+we used to evaluate the speedup achieved by the different parallel algorithms. %
+The convolution is based on a simple nested loop structure, %
+where the filter kernel is applied to each pixel in the input image to produce the %
+corresponding pixel in the output image. In our implementation, %
+we have chosen to use a simple 3x3 filter kernel for edge detection. 
+
+The serial implementation of the algorithm does verbatim what has been described so far. 
+
+The shared memory parallel implementation uses OpenMP to distribute the computational %
+workload among available threads. It does so by introducing parallel regions in the %
+padding and convolution operations. The number of threads are set at runtime using the %
+\texttt{OMP\_NUM\_THREADS} environment variable.
+
+The distributed memory parallel implementation uses MPI to divide the computational %
+workload among all available processes. The trick here is to divide the input image into %
+equal-sized chunks and pad them using the neighbors data. To achieve the correct %
+padding, the input image is first scattered to all processes, then each one sends %
+and receives the top and bottom rows to and from its neighbors. On the reconstructed %
+local image we apply the convolution as usual and the results are gathered at the end. 
+
+The GPU parallel implementation uses CUDA to harness the power of GPU cores. The %
+kernel is stored on the GPU's constant memory and the input image is copied to %
+the device memory after loading it from disk. Padding is achieved by copying the %
+input image to a larger array on the device memory. This operation is done in a %
+separate CUDA kernel from the convolution operation. The latter is computed %
+in parallel by a grid of threads, where each thread computes the convolution of %
+a single pixel in the output image. The results are then copied back to the host %
+memory in order to be saved to disk. Execution times are measured via CUDA events %
+for an accurate value.

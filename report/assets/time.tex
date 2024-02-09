@@ -1,0 +1,43 @@
+\begin{figure}%
+    \centering
+    \begin{tikzpicture}%
+        \begin{axis}[
+                width={0.8\linewidth},
+                xlabel={Threads},
+                ylabel={Elapsed Time [ms]},
+                xtick=data, % Use data points as x-axis ticks
+                xticklabels={2, 4, 8, 16, 32, 64}, % Set the x-axis tick labels
+                cycle multiindex* list={
+                    color list
+                        \nextlist
+                    marks
+                        \nextlist
+                },
+                xmode=log, % Set x-axis mode to normal
+            ]
+        
+            \addplot
+                coordinates {
+                    (2, 397)
+                    (4, 200)
+                    (8, 104)
+                    (16, 56)
+                    (32, 33)
+                    (64, 31)
+                };
+    
+            \addplot
+                coordinates {
+                    (2, 415)
+                    (4, 257)
+                    (8, 151)
+                    (16, 116)
+                    (32, 100)
+                    (64, 92)
+                };
+                
+            \legend{OpenMP, MPI}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{\label{fig:plotTime}Comparison graph by number of cores}
+\end{figure}

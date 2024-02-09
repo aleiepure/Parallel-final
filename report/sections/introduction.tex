@@ -1,0 +1,38 @@
+\section{Introduction}
+
+Image processing, a fundamental task in computer vision and digital imaging, %
+involves manipulating and enhancing digital images to extract useful information %
+or to improve their visual quality. In many real-world applications, such as medical %
+imaging, video processing, and remote sensing, the performance and efficiency of %
+such algorithms are crucial for timely and accurate results. With the %
+ever-increasing size and complexity of image data, there is a growing need for %
+efficient parallel algorithms to handle the computational demands of this kinds %
+of tasks.
+
+The objective of this project was to explore and implement parallel image %
+processing algorithms using shared and distributed memory paradigms and GPU accelerators. %
+Specifically, we focused on parallelizing image filtering operations, which are %
+commonly used for tasks such as noise reduction, edge detection, and image enhancement. %
+We implemented and optimized a convolution-based image filtering %
+algorithm to detect edges, which applies a filter kernel to each pixel in the %
+input image to produce the corresponding pixel in the output image.
+
+We began by developing a serial implementation of the algorithm %
+and subsequently parallelized it using OpenMP for shared memory systems, MPI %
+for distributed memory systems, and CUDA to harness the power of GPU cores. The parallel %
+algorithms were designed to distribute the computational workload efficiently %
+among available threads or processes, leveraging the capabilities of modern %
+multi-core CPUs, distributed computing clusters and co-processors.
+
+To ensure the correctness and effectiveness of the parallel implementations, %
+appropriate boundary-handling strategies were employed to handle edge pixels %
+during the convolution operation.\\
+The project also analyzed performance and optimizations, including %
+evaluating the speedup achieved by the parallel algorithms for different numbers %
+of threads or processes.
+
+Overall, this project aimed to provide a comprehensive understanding of parallel %
+image filtering algorithms, their implementation, and their performance characteristics %
+under different configurations. Through theoretical analysis and practical %
+experimentation, we sought to gain insights into the scalability, %
+efficiency, and adaptability of parallel image processing techniques.
